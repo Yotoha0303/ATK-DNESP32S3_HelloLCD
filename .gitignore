@@ -1,0 +1,22 @@
+# 构建产物：ESP-IDF 生成，不入库（AGENTS.md §5「交付物 vs 运行态」）
+/build/
+/sdkconfig
+/sdkconfig.old
+
+# 编译中间物
+*.o
+*.obj
+*.a
+*.elf
+*.bin
+*.map
+
+# 本地环境与凭据：任何情况下都不得进仓库
+.env
+.env.local
+.env.*.local
+
+# 编辑器 / 系统
+.vscode/settings.json
+.DS_Store
+Thumbs.db

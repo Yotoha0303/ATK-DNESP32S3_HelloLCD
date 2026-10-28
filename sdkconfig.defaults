@@ -1,0 +1,6 @@
+# 控制台输出走芯片内置的 USB-Serial/JTAG（即 COM5），
+# 不依赖板上的 USB 转串口桥，也不需要外接 UART。
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+
+# 本板 Flash 实测 16MB（esptool flash_id: Device 4018 / 16MB）
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y

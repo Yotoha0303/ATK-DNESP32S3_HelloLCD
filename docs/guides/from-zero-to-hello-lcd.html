@@ -1,0 +1,1069 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>点亮 1.3 寸屏</title>
+
+<style>
+/* ---------- tokens: light (default, un-stamped) ---------- */
+:root {
+  --ground:      #EFF1F2;
+  --surface:     #FFFFFF;
+  --surface-2:   #E4E8EB;
+  --ink:         #12171B;
+  --ink-2:       #38434C;
+  --muted:       #5E6A74;
+  --line:        #CFD6DB;
+  --line-soft:   #E0E5E8;
+  --gold:        #7E6116;
+  --gold-mid:    #A8862C;
+  --gold-wash:   #F3EDD8;
+  --ok:          #1B6653;
+  --ok-wash:     #DCEBE5;
+  --bad:         #9B3421;
+  --bad-wash:    #F5DFDA;
+
+  /* diagram panels stay dark in BOTH themes — they are instrument readouts */
+  --panel:       #0C1013;
+  --panel-2:     #141A20;
+  --panel-line:  #2A343D;
+  --panel-ink:   #DAE1E7;
+  --panel-gold:  #C9A441;
+
+  --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --mono: "Cascadia Mono", "Cascadia Code", Consolas, "SF Mono", ui-monospace, monospace;
+  --serif: Cambria, "Iowan Old Style", Georgia, "Times New Roman", serif;
+
+  --measure: 68ch;
+  --wide: 1000px;
+  --pad: clamp(20px, 5vw, 56px);
+}
+
+/* ---------- tokens: dark, system preference ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:    #0A0D10;
+    --surface:   #131920;
+    --surface-2: #1A222A;
+    --ink:       #DCE3E9;
+    --ink-2:     #B2BCC5;
+    --muted:     #88949E;
+    --line:      #263039;
+    --line-soft: #1D252C;
+    --gold:      #D6AE41;
+    --gold-mid:  #A8862C;
+    --gold-wash: #221D0E;
+    --ok:        #63C4A4;
+    --ok-wash:   #10241D;
+    --bad:       #E07E64;
+    --bad-wash:  #2A1410;
+  }
+}
+
+/* ---------- tokens: dark, explicit toggle ---------- */
+:root[data-theme="dark"] {
+  --ground:    #0A0D10;
+  --surface:   #131920;
+  --surface-2: #1A222A;
+  --ink:       #DCE3E9;
+  --ink-2:     #B2BCC5;
+  --muted:     #88949E;
+  --line:      #263039;
+  --line-soft: #1D252C;
+  --gold:      #D6AE41;
+  --gold-mid:  #A8862C;
+  --gold-wash: #221D0E;
+  --ok:        #63C4A4;
+  --ok-wash:   #10241D;
+  --bad:       #E07E64;
+  --bad-wash:  #2A1410;
+}
+
+/* ---------- base ---------- */
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.72;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: var(--wide);
+  margin: 0 auto;
+  padding: clamp(40px, 7vw, 88px) var(--pad) 120px;
+  overflow-wrap: break-word;
+}
+
+/* 任何一级都不要让内容撑破页面 */
+.phase, .body, section, .index, .table-wrap, .figure { min-width: 0; }
+
+/* ---------- masthead ---------- */
+.masthead { padding-bottom: clamp(28px, 4vw, 44px); border-bottom: 2px solid var(--ink); }
+
+.kicker {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 18px;
+}
+
+h1 {
+  font-size: clamp(34px, 6vw, 62px);
+  line-height: 1.04;
+  letter-spacing: -0.028em;
+  font-weight: 680;
+  margin: 0 0 20px;
+  text-wrap: balance;
+}
+
+.lede {
+  font-size: clamp(17px, 2.1vw, 20px);
+  line-height: 1.62;
+  color: var(--ink-2);
+  max-width: 46ch;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.datasheet {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  margin: clamp(28px, 4vw, 40px) 0 0;
+}
+
+.datasheet div { background: var(--surface); padding: 12px 14px; }
+
+.datasheet dt {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 4px;
+}
+
+.datasheet dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+/* ---------- thesis ---------- */
+.thesis {
+  margin: clamp(36px, 5vw, 56px) 0;
+  padding: clamp(24px, 3.5vw, 34px) clamp(24px, 3.5vw, 38px);
+  background: var(--gold-wash);
+  border-left: 3px solid var(--gold);
+}
+
+.thesis p { margin: 0; font-size: clamp(17px, 2vw, 19.5px); line-height: 1.62; color: var(--ink); }
+.thesis p + p { margin-top: 14px; }
+.thesis strong { color: var(--gold); font-weight: 680; }
+
+/* ---------- phase index ---------- */
+.index {
+  margin: clamp(32px, 4vw, 48px) 0 clamp(44px, 6vw, 64px);
+  border-top: 1px solid var(--line);
+}
+
+.index ol { list-style: none; margin: 0; padding: 0; }
+
+.index li {
+  display: grid;
+  grid-template-columns: 4.2ch 1fr;
+  gap: 14px;
+  align-items: baseline;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 14.5px;
+}
+
+.index .lbl {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.index .txt { color: var(--ink-2); }
+
+/* ---------- headings ---------- */
+h2 {
+  font-size: clamp(23px, 3.1vw, 31px);
+  line-height: 1.18;
+  letter-spacing: -0.018em;
+  font-weight: 660;
+  margin: 0 0 8px;
+  text-wrap: balance;
+}
+
+h3 {
+  font-size: clamp(17px, 2vw, 19.5px);
+  line-height: 1.35;
+  font-weight: 650;
+  letter-spacing: -0.008em;
+  margin: 34px 0 12px;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+/* ---------- phase blocks ---------- */
+.phase {
+  display: grid;
+  /* minmax(0,1fr) 而非 1fr：1fr 的最小宽度是 auto，
+     会被 <pre> 的长行撑开，令内层 overflow-x:auto 失效。 */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  padding: clamp(40px, 5.5vw, 62px) 0;
+  border-top: 1px solid var(--line);
+}
+
+@media (min-width: 880px) {
+  .phase { grid-template-columns: 96px minmax(0, 1fr); column-gap: 26px; }
+  .phase > .rail { grid-column: 1; }
+  .phase > .body { grid-column: 2; min-width: 0; }
+}
+
+.rail {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  font-weight: 700;
+  padding-top: 6px;
+}
+
+@media (max-width: 879px) {
+  .rail { padding-top: 0; margin-bottom: 6px; }
+}
+
+.body > p,
+.body > ul,
+.body > ol { max-width: var(--measure); }
+
+p { margin: 0 0 16px; }
+p:last-child { margin-bottom: 0; }
+
+ul, ol { margin: 0 0 18px; padding-left: 1.35em; }
+li { margin-bottom: 7px; }
+li::marker { color: var(--muted); }
+
+strong { font-weight: 660; }
+
+a { color: var(--gold); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.895em;
+  background: var(--surface-2);
+  color: var(--ink);
+  padding: 0.12em 0.4em;
+  border-radius: 3px;
+  word-break: break-word;
+}
+
+/* ---------- callouts ---------- */
+.note {
+  max-width: var(--measure);
+  margin: 22px 0;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+}
+
+.note p { margin: 0; font-size: 14.5px; line-height: 1.68; color: var(--ink-2); }
+.note p + p { margin-top: 10px; }
+.note .tag {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 7px;
+}
+
+.note.bad { border-left-color: var(--bad); background: var(--bad-wash); }
+.note.bad .tag { color: var(--bad); }
+.note.ok { border-left-color: var(--ok); background: var(--ok-wash); }
+.note.ok .tag { color: var(--ok); }
+
+/* ---------- figures / mermaid ---------- */
+.figure {
+  margin: 26px 0;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  padding: clamp(16px, 2.6vw, 26px);
+  overflow-x: auto;
+}
+
+.figure .cap {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7C8A96;
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--panel-line);
+}
+
+pre.mermaid {
+  margin: 0;
+  background: transparent;
+  color: var(--panel-ink);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.5;
+  text-align: center;
+  min-height: 40px;
+  overflow-x: auto;
+}
+
+pre.mermaid svg { max-width: 100%; height: auto; }
+
+pre.term {
+  margin: 0;
+  background: transparent;
+  color: #C3CDD6;
+  font-family: var(--mono);
+  font-size: 12.8px;
+  line-height: 1.75;
+  overflow-x: auto;
+  white-space: pre;
+  tab-size: 2;
+}
+
+pre.term .c { color: #6E7C88; }
+
+/* ---------- tables ---------- */
+.table-wrap {
+  margin: 22px 0;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 520px;
+  font-size: 14px;
+  background: var(--surface);
+}
+
+th {
+  text-align: left;
+  font-weight: 620;
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+  white-space: nowrap;
+}
+
+td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: top;
+  color: var(--ink-2);
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+td code { background: transparent; padding: 0; }
+
+td.num, th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ---------- evidence ladder ---------- */
+.ladder { list-style: none; margin: 26px 0; padding: 0; max-width: 100%; }
+
+.ladder li {
+  display: grid;
+  grid-template-columns: 2.9ch minmax(0, 1fr) minmax(90px, 24%);
+  align-items: center;
+  gap: 16px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line-soft);
+  margin: 0;
+}
+
+.ladder .lvl {
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1;
+  color: var(--muted);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ladder li:nth-child(n+4) .lvl { color: var(--ok); }
+
+.ladder .txt { font-size: 14.5px; color: var(--ink-2); }
+.ladder .txt code { font-size: 0.88em; }
+
+.ladder .bar {
+  position: relative;
+  height: 7px;
+  background: var(--surface-2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ladder .bar::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--w);
+  background: var(--c, var(--muted));
+  border-radius: 2px;
+}
+
+.ladder .final .lvl { color: var(--gold); font-size: 17px; }
+.ladder .final .txt { color: var(--ink); font-weight: 600; }
+
+@media (max-width: 560px) {
+  .ladder li { grid-template-columns: 2.9ch 1fr; }
+  .ladder .bar { grid-column: 2; }
+}
+
+/* ---------- decision card ---------- */
+.split {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  margin: 26px 0;
+}
+
+@media (min-width: 720px) { .split { grid-template-columns: 1fr 1fr; } }
+
+.split > div { background: var(--surface); padding: 20px 22px; }
+
+.split h4 {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+
+.split .yes h4 { color: var(--ok); }
+.split .no h4 { color: var(--bad); }
+
+.split ul { margin: 0; padding-left: 1.15em; font-size: 14px; line-height: 1.62; }
+.split li { margin-bottom: 6px; color: var(--ink-2); }
+.split li:last-child { margin-bottom: 0; }
+
+/* ---------- footer ---------- */
+.foot {
+  margin-top: clamp(56px, 7vw, 84px);
+  padding-top: 22px;
+  border-top: 2px solid var(--ink);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+  // 用 UMD 版而非 ES module：file:// 直接双击打开时，module 脚本会被 CORS 拦掉。
+  // 若离线打不开 CDN，下面的降级提示会出现在每个图下方，不会白屏。
+  (function () {
+    var boxes = function () { return document.querySelectorAll('pre.mermaid'); };
+
+    function fallback() {
+      boxes().forEach(function (el) {
+        if (el.dataset.done) return;
+        el.dataset.done = '1';
+        var p = document.createElement('p');
+        p.style.cssText = 'color:#7C8A96;font-size:12px;margin:10px 0 0;text-align:left';
+        p.textContent = '（图未能渲染：离线或 CDN 不可达。下方即为图源码。）';
+        el.parentNode.insertBefore(p, el.nextSibling);
+      });
+    }
+
+    function paint() {
+      if (!window.mermaid) { fallback(); return; }
+      try {
+        window.mermaid.initialize({ startOnLoad: false, securityLevel: 'loose' });
+        window.mermaid.run({ nodes: Array.prototype.slice.call(boxes()) })
+          .then(function () {
+            boxes().forEach(function (el) { el.dataset.done = '1'; });
+          })
+          .catch(fallback);
+      } catch (e) { fallback(); }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', paint);
+    } else { paint(); }
+
+    // 切换深浅色时重绘一次，保证图例配色跟着变
+    window.addEventListener('storage', function () { /* no-op：占位，避免多次绑定 */ });
+  })();
+</script>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="masthead">
+    <p class="kicker">ESP32-S3 · ATK-DNESP32S3 V1 · 复盘 2026-10-27</p>
+    <h1>点亮 1.3 寸屏</h1>
+    <p class="lede">从零到一的完整轨迹。真正花时间的不是写代码，而是确认屏幕接在哪几个脚上——一个事实缺口，不是能力缺口。</p>
+
+    <dl class="datasheet">
+      <div><dt>开发板</dt><dd>ATK-DNESP32S3 V1</dd></div>
+      <div><dt>模组</dt><dd>ATK-MWS3S N16R8</dd></div>
+      <div><dt>屏幕</dt><dd>1.3″ 240×240 SPI</dd></div>
+      <div><dt>串口</dt><dd>COM5 · USB-JTAG</dd></div>
+      <div><dt>工具链</dt><dd>ESP-IDF v5.4.4</dd></div>
+    </dl>
+  </header>
+
+  <div class="thesis">
+    <p>这次需求很小：屏幕上显示四个字。但从拿到板子到看见画面，中间有 <strong>八个环节</strong>，每个环节都有各自的失败方式。</p>
+    <p>本文记录的不是「怎么做对」，而是<strong>「怎么知道自己是做对了」</strong>——每一步都有一个可证伪的判据，前一步不过，绝不进入下一步。失败与误判照实写进来，因为那部分才是可复用的。</p>
+  </div>
+
+  <nav class="index" aria-label="阶段索引">
+    <ol>
+      <li><span class="lbl">P0</span><span class="txt">建立通信 —— 先确认它是不是活的</span></li>
+      <li><span class="lbl">P1</span><span class="txt">最小闭环 —— Walking Skeleton，此时不碰屏幕</span></li>
+      <li><span class="lbl">P2</span><span class="txt">需求变更 —— 撞上事实缺口，停下来索取</span></li>
+      <li><span class="lbl">P3</span><span class="txt">复用而非重写 —— 拿厂商已验证的驱动</span></li>
+      <li><span class="lbl">P4</span><span class="txt">最小必要修改 —— 只动两处</span></li>
+      <li><span class="lbl">P5</span><span class="txt">初始化顺序 —— 一条不能颠倒的硬依赖</span></li>
+      <li><span class="lbl">P6</span><span class="txt">验证阶梯 —— 从 exit 0 爬到目视确认</span></li>
+      <li><span class="lbl">P7</span><span class="txt">反馈迭代 —— 先定性，再定量</span></li>
+    </ol>
+  </nav>
+
+  <section>
+    <h2>全景</h2>
+    <p>先看整条路径。图中的每一个反向箭头，都是这次真实走过、或明确规避过的分支——不是「可能出问题」的泛泛列举。</p>
+
+    <div class="figure">
+      <p class="cap">图 1 · 从硬件到点亮的完整判定链</p>
+<pre class="mermaid">
+%%{init: {"theme":"base","themeVariables":{"background":"#0C1013","primaryColor":"#141A20","primaryTextColor":"#DAE1E7","primaryBorderColor":"#3A4652","lineColor":"#6E7C88","secondaryColor":"#141A20","tertiaryColor":"#141A20","fontFamily":"Cascadia Mono, Consolas, monospace","fontSize":"12px","clusterBkg":"#10161B","clusterBorder":"#2A343D","edgeLabelBackground":"#0C1013"}}}%%
+flowchart TD
+    A["拿到硬件"] --> B{"能枚举到串口吗"}
+    B -- 否 --> B1["查 USB 驱动 / 换线 / 换口"] --> B
+    B -- 是 --> C["flash_id<br/>确认芯片 / Flash / PSRAM"]
+    C --> D["定位工具链<br/>IDF_PATH + idf.py"]
+    D --> E{"idf.py 可用?"}
+    E -- 否 --> E1["source EIM profile 脚本"] --> E
+    E -- 是 --> F["最小闭环<br/>hello world 走串口"]
+    F --> G{"串口有输出?"}
+    G -- 否 --> G1["控制台通道选错<br/>UART0 vs USB-JTAG"] --> F
+    G -- 是 --> H(["Walking Skeleton 成立"])
+    H --> I["新需求：上屏显示"]
+    I --> J{"知道屏幕型号和引脚吗"}
+    J -- 否 --> J1["停止 · 索取型号 / 照片 / 例程"] --> J
+    J -- 是 --> K["从厂商源码取引脚<br/>不靠经验推测"]
+    K --> L["复用厂商 BSP"]
+    L --> M["最小必要修改"]
+    M --> N["idf.py build"]
+    N --> O{"exit 0?"}
+    O -- 否 --> M
+    O -- 是 --> P["idf.py flash"]
+    P --> Q{"Hash verified?"}
+    Q -- 否 --> P
+    Q -- 是 --> R["串口验证<br/>无 panic / 无复位"]
+    R --> S{"屏幕亮了?"}
+    S -- 否 --> S1["排查 SPI_LCD_TYPE<br/>与 XL9555 初始化"] --> M
+    S -- 是 --> T(["功能达成"])
+    T --> U["反馈：配色太亮"]
+    U --> V["降颜色值<br/>背光无 PWM 通道"]
+    V --> W(["交付"])
+    classDef done fill:#15352A,stroke:#63C4A4,color:#DAE1E7
+    classDef block fill:#3A1712,stroke:#E07E64,color:#DAE1E7
+    class H,T,W done
+    class J1 block
+</pre>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="rail">P0</div>
+    <div class="body">
+      <h2>建立通信</h2>
+      <p>先证明电脑能看见这块板。这一步不做，后面所有判断都建立在假设上。</p>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>判据</th><th>实测</th><th>含义</th></tr></thead>
+        <tbody>
+          <tr><td><code>VID_303A</code></td><td class="num">命中</td><td><strong>Espressif 原生 USB</strong>，不是 CH340 / CP210x 桥接</td></tr>
+          <tr><td><code>PID_1001</code></td><td class="num">命中</td><td>USB-Serial/JTAG（S3 原生外设）</td></tr>
+          <tr><td><code>ConfigManagerErrorCode</code></td><td class="num">0</td><td>驱动正常，无设备错误</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="note bad">
+        <span class="tag">这一步避开的坑</span>
+        <p>本机同时存在 <code>COM3</code> / <code>COM4</code>，但它们是 <code>BTHENUM\…</code>（蓝牙虚拟串口）。只看「有几个 COM 口」会误判。唯一可靠判据是 <strong>VID</strong>。</p>
+      </div>
+
+      <div class="note">
+        <span class="tag">可复用结论</span>
+        <p>ESP32-S3 原生 USB 板<strong>不需要装任何 USB 转串口驱动</strong>。工具清单里列的 CH340 / CP210x，对这块板一个都用不上。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="rail">P1</div>
+    <div class="body">
+      <h2>最小闭环</h2>
+      <p>先让「代码 → 编译 → 烧录 → 看到输出」这条路全程打通，<strong>此时完全不碰屏幕</strong>。屏幕是第二个变量，不能和第一个混在一起调。</p>
+
+      <h3>一处必须改的配置</h3>
+      <p>IDF 默认控制台是 <strong>UART0</strong>。这块板的 UART0 没有接到 USB 上，不改这一项，<strong>烧录会成功，但 COM5 一个字都不会有</strong>——这是最容易被误判成「烧录失败」的形态。</p>
+      <p><code>CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y</code></p>
+
+      <h3>用双时钟互证</h3>
+      <p>只用宿主时钟，「1 秒一行」可能只是巧合。让设备自己报时，两个互不相关的时钟都给出 1000 ms，才能排除观测误差。</p>
+
+      <div class="table-wrap"><table>
+          <thead><tr><th>时钟</th><th>读数</th></tr></thead>
+          <tbody>
+            <tr><td>设备自报 <code>uptime</code>（<code>esp_timer</code>）</td><td class="num">9007 → 10007 → 11007 … 严格 +1000</td></tr>
+            <tr><td>宿主侧 <code>Stopwatch</code> 打点</td><td class="num">1062 → 2062 → 3062 … 严格 +1000</td></tr>
+          </tbody>
+        </table></div>
+
+      <div class="note ok">
+        <span class="tag">本阶段产出</span>
+        <p>一个<strong>能跑的东西</strong>。按框架 §0.2，它从此成为<strong>不可协商的回归基线</strong>——后续任何改动都不得把它拆掉。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="rail">P2</div>
+    <div class="body">
+      <h2>需求变更撞上事实缺口</h2>
+      <p>新需求：在 1.3 寸屏上显示 hello world。这一步看起来是加功能，实际先遇到的是<strong>「不知道屏幕接在哪几个脚上」</strong>。</p>
+
+      <h3>为什么不能猜</h3>
+
+      <div class="figure">
+        <p class="cap">图 2 · 引脚信息的取得路径与三种误判代价</p>
+<pre class="mermaid">
+%%{init: {"theme":"base","themeVariables":{"background":"#0C1013","primaryColor":"#141A20","primaryTextColor":"#DAE1E7","primaryBorderColor":"#3A4652","lineColor":"#6E7C88","secondaryColor":"#141A20","tertiaryColor":"#141A20","fontFamily":"Cascadia Mono, Consolas, monospace","fontSize":"12px","clusterBkg":"#10161B","clusterBorder":"#2A343D","edgeLabelBackground":"#0C1013"}}}%%
+flowchart TD
+    Q["需要引脚定义"] --> A{"能从厂商源码 / 原理图读到吗"}
+    A -- 能 --> B["读 lcd.h / spi.h / iic.h"]
+    B --> C(["确定值 · 可执行"])
+    A -- 不能 --> D{"能凭经验推测吗"}
+    D -- "1.3寸通常是 ST7789" --> E["这是被禁止的推断"]
+    D -- 不能 --> F["停止 · 索取型号 / 照片 / 例程"]
+    F --> A
+    E --> G["风险一 · 撞 Flash/PSRAM 占用脚<br/>GPIO35/36/37 → 启动崩溃"]
+    E --> H["风险二 · 驱动 IC 猜错<br/>初始化序列不匹配 → 黑屏"]
+    E --> I["风险三 · 输出脚顶到输入脚<br/>硬件层面可能损伤器件"]
+    classDef bad fill:#3A1712,stroke:#E07E64,color:#DAE1E7
+    classDef good fill:#15352A,stroke:#63C4A4,color:#DAE1E7
+    class E,G,H,I bad
+    class C good
+</pre>
+      </div>
+
+      <h3>三层命名：芯片 ≠ 模组 ≠ 开发板</h3>
+      <div class="table-wrap"><table>
+          <thead><tr><th>层级</th><th>是什么</th><th>谁决定引脚</th></tr></thead>
+          <tbody>
+            <tr><td>芯片</td><td><code>ESP32-S3</code></td><td>乐鑫</td></tr>
+            <tr><td>模组</td><td><code>ATK-MWS3S N16R8</code></td><td>正点原子</td></tr>
+            <tr><td><strong>开发板</strong></td><td><strong><code>ATK-DNESP32S3 V1</code></strong> → 这张接线表</td><td>正点原子</td></tr>
+          </tbody>
+        </table></div>
+      <p>同一颗 ESP32-S3，正点原子接 <code>GPIO21/40</code>，微雪接 <code>GPIO10/11/12</code>，斑梨接 <code>GPIO38/39</code>。<strong>板子型号就是那张接线表的名字。</strong></p>
+
+      <h3>事实是怎么拿到的</h3>
+      <p>不是靠搜索引擎的二手文章，而是<strong>从本机上的官方资料里读源码</strong>——后来在用户桌面找到了厂商例程 <code>12_spilcd</code>。</p>
+
+      <div class="table-wrap"><table>
+          <thead><tr><th>信号</th><th>GPIO</th><th>出处</th></tr></thead>
+          <tbody>
+            <tr><td>SPI2_SCLK</td><td class="num">12</td><td><code>SPI/spi.h:32</code></td></tr>
+            <tr><td>SPI2_MOSI</td><td class="num">11</td><td><code>SPI/spi.h:31</code></td></tr>
+            <tr><td>SPI2_MISO</td><td class="num">13</td><td><code>SPI/spi.h:33</code></td></tr>
+            <tr><td>LCD_DC (WR)</td><td class="num">40</td><td><code>LCD/lcd.h:37</code></td></tr>
+            <tr><td>LCD_CS</td><td class="num">21</td><td><code>LCD/lcd.h:38</code></td></tr>
+            <tr><td>I2C0_SDA</td><td class="num">41</td><td><code>IIC/iic.h:51</code></td></tr>
+            <tr><td>I2C0_SCL</td><td class="num">42</td><td><code>IIC/iic.h:52</code></td></tr>
+          </tbody>
+        </table></div>
+
+      <div class="note bad">
+        <span class="tag">最关键的发现</span>
+        <p>屏幕的 <strong>RST 和背光压根不接 GPIO</strong>，而是走 <strong>XL9555 I/O 扩展芯片</strong>（I2C 地址 <code>0x20</code>）：<code>SLCD_RST_IO = 0x0400</code>、<code>SLCD_PWR_IO = 0x0800</code>。</p>
+        <p>这一条如果没查到，写出来的代码会<strong>编译通过、烧录成功、屏幕全黑</strong>——现象和「驱动写错」完全一样，会把排查引向错误方向。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="rail">P3</div>
+    <div class="body">
+      <h2>复用，而不是重写</h2>
+      <p>决策：把厂商 <code>components/BSP</code> 整目录复制进工程，<strong>不自己写驱动</strong>。</p>
+
+      <div class="split">
+        <div class="yes">
+          <h4>复用的理由</h4>
+          <ul>
+            <li>厂商 BSP 已在该硬件上验证过</li>
+            <li>自写驱动要重调初始化序列、时序、扫描方向，产出不确定</li>
+            <li>「能跑的东西不得在没有架构指令时重写」</li>
+          </ul>
+        </div>
+        <div class="no">
+          <h4>代价（必须接受）</h4>
+          <ul>
+            <li>代码不是你写的，出问题要读得懂</li>
+            <li>与上游无同步机制——升级时会丢本地修改</li>
+            <li>引入了厂商的旧版 I2C 驱动（已弃用）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="rail">P4</div>
+    <div class="body">
+      <h2>最小必要修改</h2>
+      <p>厂商代码默认按 <strong>2.4 寸屏</strong>配置，本板是 <strong>1.3 寸</strong>。两处必改，都标了 <code>/* ===== 本地修改（本项目） ===== */</code>。</p>
+
+      <div class="table-wrap"><table>
+          <thead><tr><th>位置</th><th>原值</th><th>改为</th><th>改错会怎样</th></tr></thead>
+          <tbody>
+            <tr><td><code>lcd.c:29</code><br><code>SPI_LCD_TYPE</code></td><td class="num">1（2.4寸）</td><td class="num">0（1.3寸）</td><td><strong>两套初始化序列完全不同</strong> → 黑屏</td></tr>
+            <tr><td><code>lcd_display_dir()</code></td><td class="num">写死 320×240</td><td class="num">240×240</td><td>窗口越界 + 清屏只刷一半，<strong>下半屏不更新</strong></td></tr>
+          </tbody>
+        </table></div>
+
+      <div class="note">
+        <span class="tag">为什么第二处必须改</span>
+        <p><code>lcd_clear()</code> 依赖 <code>LCD_TOTAL_BUF_SIZE (320×240×2)</code> 分块发送，而 240×240 只有它的一半。不改会导致<strong>下半屏残留旧内容</strong>。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="rail">P5</div>
+    <div class="body">
+      <h2>初始化顺序</h2>
+      <p>这里有一条不能颠倒的硬依赖：屏幕的复位与背光都挂在 XL9555 上，而 XL9555 挂在 I2C 上。</p>
+
+      <div class="figure">
+        <p class="cap">图 3 · 启动时的初始化时序</p>
+<pre class="mermaid">
+%%{init: {"theme":"base","themeVariables":{"background":"#0C1013","primaryColor":"#141A20","primaryTextColor":"#DAE1E7","primaryBorderColor":"#3A4652","lineColor":"#6E7C88","secondaryColor":"#141A20","tertiaryColor":"#141A20","fontFamily":"Cascadia Mono, Consolas, monospace","fontSize":"12px","actorBkg":"#141A20","actorBorder":"#3A4652","actorTextColor":"#DAE1E7","signalColor":"#6E7C88","signalTextColor":"#B2BCC5","labelBoxBkgColor":"#1B222A","labelBoxBorderColor":"#3A4652","labelTextColor":"#DAE1E7","loopTextColor":"#DAE1E7","noteBkgColor":"#221D0E","noteBorderColor":"#C9A441","noteTextColor":"#E8DDB0","sequenceNumberColor":"#0C1013"}}}%%
+sequenceDiagram
+    autonumber
+    participant M as app_main
+    participant I2C as I2C0 · 41/42
+    participant XL as XL9555 · 0x20
+    participant SPI as SPI2 · 11/12/13
+    participant LCD as LCD 面板
+
+    M->>M: nvs_flash_init()
+    M->>I2C: iic_init(I2C_NUM_0)
+    Note over I2C: 必须最先 · XL9555 挂在它上面
+    M->>SPI: spi2_init()
+    M->>XL: xl9555_init()
+    XL->>XL: ioconfig(0xF003)
+    M->>LCD: lcd_init()
+    LCD->>XL: LCD_RST(0) → 100ms → LCD_RST(1)
+    Note over LCD,XL: 复位走 XL9555，不是 GPIO
+    LCD->>LCD: 发送初始化命令序列
+    LCD->>XL: LCD_PWR(1) 开背光
+    LCD->>LCD: lcd_clear() 清屏
+</pre>
+      </div>
+
+      <div class="note bad">
+        <span class="tag">顺序不可颠倒</span>
+        <p><strong>只初始化 SPI 不初始化 XL9555 = 屏幕既不复位也没有背光 = 全黑无反应。</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="rail">P6</div>
+    <div class="body">
+      <h2>验证阶梯</h2>
+      <p>「没报错」和「功能对」是两件事。证据要按强度分级，逐级往上爬——而且要说清楚<strong>当前证据支持到哪一级</strong>。</p>
+
+      <ol class="ladder">
+        <li><span class="lvl">①</span><span class="txt">编译 <code>exit 0</code></span><span class="bar" style="--w:20%;--c:var(--muted)"></span></li>
+        <li><span class="lvl">②</span><span class="txt">烧录 · <code>Hash of data verified</code> ×3</span><span class="bar" style="--w:38%;--c:var(--muted)"></span></li>
+        <li><span class="lvl">③</span><span class="txt">启动日志 · 无 panic、无复位循环</span><span class="bar" style="--w:54%;--c:var(--ink-2)"></span></li>
+        <li><span class="lvl">④</span><span class="txt">间接判据 · XL9555 未触发 <code>esp_restart</code></span><span class="bar" style="--w:72%;--c:var(--ok)"></span></li>
+        <li><span class="lvl">⑤</span><span class="txt">代码执行证据 · 打印出 <code>panel: 240x240</code></span><span class="bar" style="--w:86%;--c:var(--ok)"></span></li>
+        <li class="final"><span class="lvl">⑥</span><span class="txt">目视确认 · 屏幕上真的出现了文字</span><span class="bar" style="--w:100%;--c:var(--gold)"></span></li>
+      </ol>
+
+      <h3>第 ④ 级的间接判据</h3>
+      <p><code>xl9555_ioconfig()</code> 失败时的代码是：重试 3 次仍失败则 <code>esp_restart()</code>。这意味着——</p>
+
+      <div class="note ok">
+        <span class="tag">不需要看屏幕就能拿到的强证据</span>
+        <p>只要程序<strong>连续运行超过 15 秒没有重启</strong>，就说明 <strong>I2C 通信成功、XL9555 应答正常、屏幕复位与背光控制通路成立</strong>。</p>
+        <p>在无法目视的场景（远程设备、屏幕在背面、机箱内）下，这类判据尤其有价值。</p>
+      </div>
+
+      <div class="note bad">
+        <span class="tag">第 ⑥ 级只有人能给</span>
+        <p>我看不到屏幕。在拿到用户那句「我看到屏幕上的内容了」之前，我能说的上限是「代码跑到了、通路成立了」——<strong>不是「显示成功了」</strong>。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="rail">P7</div>
+    <div class="body">
+      <h2>反馈迭代</h2>
+      <p>用户反馈：<strong>配色太亮</strong>。</p>
+      <p>第一反应不该是调参数，而是先查<strong>「有没有得调」</strong>。把 BSP 全目录搜了一遍 <code>ledc</code> / <code>PWM</code>：<strong>零命中</strong>。</p>
+      <p>背光走 <code>SLCD_PWR_IO</code>（XL9555 的数字 IO），<strong>只有开和关两档，没有 PWM 通道</strong>。所以亮度<strong>无法软件调节</strong>，只能压低颜色值本身。</p>
+
+      <div class="table-wrap"><table>
+          <thead><tr><th>用途</th><th>改前</th><th>改后</th><th>亮度</th></tr></thead>
+          <tbody>
+            <tr><td>背景</td><td class="num">0x0000 纯黑</td><td class="num">0x1082 · RGB(16,16,16)</td><td>—</td></tr>
+            <tr><td>标题</td><td class="num">0x07FF 满亮度青</td><td class="num">0x3AD1 · RGB(57,89,140)</td><td class="num">↓45%</td></tr>
+            <tr><td>正文</td><td class="num">0xFFFF 纯白</td><td class="num">0x94B2 · RGB(148,150,148)</td><td class="num">↓41%</td></tr>
+            <tr><td>强调</td><td class="num">0xF800 满亮度红</td><td class="num">0x9365 · RGB(148,109,41)</td><td class="num">↓42%</td></tr>
+          </tbody>
+        </table></div>
+
+      <p>刺眼的元凶是<strong>纯白和满亮度红</strong>——这两个在 1.3 寸小屏上对比度过高。</p>
+
+      <div class="note">
+        <span class="tag">可复用判断</span>
+        <p>遇到「太亮 / 太暗」这类反馈，先分清是<strong>可调参数问题</strong>（→ 调参数）还是<strong>通道能力问题</strong>（→ 只能换实现方式）。本板属于后者：真要调亮度得改硬件，把背光改接到带 LEDC 的 GPIO。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>硬件拓扑</h2>
+    <p>图中 <strong>XL9555 标红</strong>是刻意的：它是这条链路上唯一不直观的一环。少了它，SPI 波形再正确，屏幕也不会亮。</p>
+
+    <div class="figure">
+      <p class="cap">图 4 · 信号连接关系</p>
+<pre class="mermaid">
+%%{init: {"theme":"base","themeVariables":{"background":"#0C1013","primaryColor":"#141A20","primaryTextColor":"#DAE1E7","primaryBorderColor":"#3A4652","lineColor":"#6E7C88","secondaryColor":"#141A20","tertiaryColor":"#141A20","fontFamily":"Cascadia Mono, Consolas, monospace","fontSize":"12px","clusterBkg":"#10161B","clusterBorder":"#2A343D","edgeLabelBackground":"#0C1013"}}}%%
+graph LR
+    subgraph S3["ESP32-S3 · ATK-MWS3S N16R8"]
+        SPI2["SPI2<br/>SCLK 12 · MOSI 11 · MISO 13"]
+        I2C0["I2C0<br/>SDA 41 · SCL 42"]
+        G40["GPIO40<br/>DC"]
+        G21["GPIO21<br/>CS"]
+    end
+    subgraph PANEL["ATK-MD0130 · 1.3in 240x240"]
+        P_SPI["SPI 接口"]
+        P_RST["RST"]
+        P_BL["背光 BL"]
+    end
+    XL["XL9555<br/>I/O 扩展 0x20"]
+    SPI2 -->|cmd / data| P_SPI
+    G40 -->|DC 选通| P_SPI
+    G21 -->|片选| P_SPI
+    I2C0 <-->|400 kHz| XL
+    XL -->|SLCD_RST 0x0400| P_RST
+    XL -->|SLCD_PWR 0x0800| P_BL
+    classDef warn fill:#3A1712,stroke:#E07E64,color:#DAE1E7
+    class XL warn
+</pre>
+    </div>
+
+    <div class="note">
+      <span class="tag">一个已实测确认无害的命名隐患</span>
+      <p><code>GPIO40</code> 被两份代码定义为不同用途：<code>lcd.h</code> 说是 <code>LCD_NUM_WR</code>（DC），<code>xl9555.h</code> 说是 <code>XL9555_INT_IO</code>。启动日志显示<strong>先配为输入、后配为输出</strong>，最终生效的是 LCD 用途——实际硬件上 XL9555 的中断并未接到这个脚。不冲突，但属于厂商代码的命名隐患，记下来以免日后误解。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>踩过的四个坑</h2>
+    <p>其中两条是我自己的判断失误。照实写，因为这类错误的形态会重复出现。</p>
+
+    <div class="table-wrap"><table>
+        <thead><tr><th>坑</th><th>表现</th><th>根因</th><th>教训</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>判 IDF 未安装</strong></td>
+            <td>报「工具链不存在」</td>
+            <td>只查了 <code>C:\esp</code> 和系统环境变量，实际装在 <code>D:\IDF-tools</code>，且 <code>IDF_PATH</code> 只在 source profile 后才存在</td>
+            <td>查「不存在」必须先穷尽候选路径，否则「没找到」被误读成「没有」</td>
+          </tr>
+          <tr>
+            <td><strong>给了未验证的命令</strong></td>
+            <td>让用户跑 <code>idf.py monitor</code>，自己没先跑过</td>
+            <td>只验证了直接读串口，跳过了这条</td>
+            <td>给别人命令前，自己必须先跑通一次</td>
+          </tr>
+          <tr>
+            <td><strong>错误归因</strong></td>
+            <td>猜「没反应」是 DTR/RTS 把芯片拖进下载模式</td>
+            <td>没做对照实验就下结论</td>
+            <td>做了对照才推翻：<code>DTR/RTS = 0/0</code> 与 <code>1/1</code> 都有输出，S3 原生 USB 不理这两个信号</td>
+          </tr>
+          <tr>
+            <td><strong>覆盖了出厂固件</strong></td>
+            <td>第一次烧 hello world 时覆盖了 <code>0x10000</code> 的 factory 分区</td>
+            <td>没意识到出厂固件里可能藏着这条屏幕的引脚配置</td>
+            <td>烧录前先想：现有固件里有没有我需要的线索？这条线索一旦覆盖就没了</td>
+          </tr>
+        </tbody>
+      </table></div>
+
+    <div class="note">
+      <span class="tag">第三条的方法论</span>
+      <p>当「没反应」时，先找<strong>能区分的证据</strong>，再猜原因。这次的区分证据是：<strong>当时 COM5 能成功打开</strong> ⇒ 说明没有任何终端在读它（<code>idf.py monitor</code> 会独占端口，实测占用时 <code>Open</code> 报 <code>Access denied</code>）⇒ 「没反应」是<strong>观测问题</strong>，不是固件问题。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>五条可复用的方法论</h2>
+
+    <div class="figure">
+      <p class="cap">图 5 · 方法论之间的关系</p>
+<pre class="mermaid">
+%%{init: {"theme":"base","themeVariables":{"background":"#0C1013","primaryColor":"#141A20","primaryTextColor":"#DAE1E7","primaryBorderColor":"#3A4652","lineColor":"#6E7C88","secondaryColor":"#141A20","tertiaryColor":"#141A20","fontFamily":"Cascadia Mono, Consolas, monospace","fontSize":"12px","clusterBkg":"#10161B","clusterBorder":"#2A343D","edgeLabelBackground":"#0C1013"}}}%%
+flowchart TD
+    A["① 先建最小闭环<br/>Walking Skeleton"]
+    B["② 一次只引入一个新变量<br/>先串口，再屏幕"]
+    C["③ 事实缺口 → 停下来要 · 不猜"]
+    D["④ 证据分级<br/>从 exit 0 爬到目视确认"]
+    E["⑤ 反馈先定性再定量<br/>可调参数 vs 通道能力"]
+    A --> B --> C --> D --> E
+    classDef k fill:#132A3A,stroke:#5B9BD5,color:#DAE1E7
+    class A,B,C,D,E k
+</pre>
+    </div>
+
+    <div class="table-wrap"><table>
+        <thead><tr><th>原则</th><th>在这次里具体是什么</th></tr></thead>
+        <tbody>
+          <tr><td><strong>① 先建最小闭环</strong></td><td>在碰屏幕之前，先让「编译→烧录→看到输出」整条路打通</td></tr>
+          <tr><td><strong>② 一次只引入一个新变量</strong></td><td>先串口（已知能通）→ 再屏幕（未知）。混在一起调，出问题无法定位</td></tr>
+          <tr><td><strong>③ 事实缺口就停下来要</strong></td><td>「不知道引脚」和「不会写驱动」是两类问题：前者必须索取</td></tr>
+          <tr><td><strong>④ 证据分级</strong></td><td><code>exit 0</code> ≠ 功能正确。说清楚证据支持到哪一级</td></tr>
+          <tr><td><strong>⑤ 反馈先定性再定量</strong></td><td>「太亮」→ 先查有没有 PWM，再谈调多少</td></tr>
+        </tbody>
+      </table></div>
+  </section>
+
+  <section>
+    <h2>产物与遗留</h2>
+
+    <div class="table-wrap"><table>
+        <thead><tr><th>文件</th><th>作用</th></tr></thead>
+        <tbody>
+          <tr><td><code>main/main.c</code></td><td>显示逻辑 + 配色（四个颜色宏在顶部）</td></tr>
+          <tr><td><code>components/BSP/</code></td><td>厂商 BSP，<strong>2 处本地修改已标注</strong></td></tr>
+          <tr><td><code>sdkconfig.defaults</code></td><td>控制台走 USB-JTAG；Flash 16MB</td></tr>
+          <tr><td><code>docs/changes/001-*.md</code></td><td>串口版 hello world（已被 002 取代，留作基线）</td></tr>
+          <tr><td><code>docs/changes/002-*.md</code></td><td>本次 · 屏幕显示，含全部实测日志</td></tr>
+          <tr><td><code>docs/ledger.md</code></td><td>GAP-001..007 · DEFER-001..003</td></tr>
+        </tbody>
+      </table></div>
+
+    <h3>遗留缺口</h3>
+    <div class="table-wrap"><table>
+        <thead><tr><th>编号</th><th>内容</th><th>性质</th></tr></thead>
+        <tbody>
+          <tr><td class="num">GAP-004</td><td>01 设计环无 ADR 与可测验收标准</td><td><strong>阻塞后续业务开发</strong></td></tr>
+          <tr><td class="num">GAP-005</td><td>背光无法软件调光</td><td>硬件限制，不修</td></tr>
+          <tr><td class="num">GAP-006</td><td>使用 IDF 已弃用的旧版 I2C 驱动</td><td>未来升级需迁移</td></tr>
+          <tr><td class="num">GAP-007</td><td>BSP 为厂商代码副本，无同步机制</td><td>升级时需人工 diff</td></tr>
+        </tbody>
+      </table></div>
+  </section>
+
+  <section>
+    <h2>复现命令</h2>
+
+    <div class="figure">
+      <p class="cap">PowerShell · 从零到点亮</p>
+<pre class="term"><span class="c"># 1 · 激活环境（每次新开终端都要）</span>
+. 'C:\Espressif\tools\Microsoft.v5.4.4.PowerShell_profile.ps1'
+
+<span class="c"># 2 · 进工程</span>
+cd D:\MyDocuments\esp32_env\ai-collaboration-framework\esp32s3-project
+
+<span class="c"># 3 · 编译 → 烧录 → 监视</span>
+idf.py build
+idf.py -p COM5 flash
+idf.py -p COM5 monitor      <span class="c"># Ctrl + ] 退出</span>
+
+<span class="c"># 换屏幕尺寸后必须彻底清理</span>
+idf.py fullclean
+idf.py build</pre>
+    </div>
+
+    <h3>判定成功的依据（按强度递增）</h3>
+    <ol>
+      <li><code>build</code> 输出 <code>Project build complete</code>，<code>exit 0</code></li>
+      <li><code>flash</code> 输出三笔 <code>Hash of data verified</code></li>
+      <li><code>monitor</code> 出现标题行，且<strong>无 panic、无复位循环</strong></li>
+      <li>连续运行 &gt; 15 秒不重启（证明 XL9555 未触发 <code>esp_restart</code>）</li>
+      <li><strong>屏幕上出现文字</strong>——唯一无法替代的判据</li>
+    </ol>
+  </section>
+
+  <p class="foot">
+    <span>点亮 1.3 寸屏</span>
+    <span>2026-10-27</span>
+    <span>ESP-IDF v5.4.4</span>
+    <span>ATK-DNESP32S3 V1</span>
+    <span>源文档 · docs/guides/from-zero-to-hello-lcd.md</span>
+  </p>
+
+</div>
+
+</body>
+</html>
+
+
